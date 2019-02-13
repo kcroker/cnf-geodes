@@ -1,0 +1,77 @@
+load "useful_macros.gpt"
+load "__SET_____FIGURE__-palette.gpt"
+
+# Palette settings get appended to the top of this file
+set term cairolatex standalone size 6cm,6cm header '\usepackage{amsmath}'
+set output "chirpz__SET__-__FIGURE__.tex"
+
+set tmargin at screen 0.16; set bmargin at screen 0.9
+set lmargin at screen 0.16; set rmargin at screen 0.80
+
+set ylabel '\scalebox{0.5}{Merger redshift $z_f$}' offset 7.25,0
+set xlabel '\scalebox{0.5}{Source frame chirp mass $\mathcal{M}~\frac{(m_1 m_2)^{3/5}}{(m_1 + m_2)^{1/5}}$ ($M_\odot$)}' offset 0,1
+set xtics offset 0,0.6
+set ytics offset 0.75,0
+#set tics front
+set format cb '\scalebox{0.5}{$%.2f$}'
+#set format cb '\scalebox{0.5}{$10^{%T}$}'
+set cbtics 0.01 offset -0.2,0
+numevents=sprintf('\scalebox{0.5}{Fraction of mergers $(N=%.0f)$}', real(system("wc -l results/A__SET_____FIGURE___cut | cut -d' ' -f1")) - 1)
+set cblabel numevents offset -6,0
+set style line 13 lc rgb "gray" lt 1 lw 2
+#set xtics 1
+#set ytics 1
+set mxtics
+set mytics
+#set xtics scale 0
+#set ytics scale 0
+set tics scale 0,0.001
+set cbtics scale default
+#set mytics scale 0.001
+
+set grid mxtics mytics front ls 13
+
+#set logscale cb
+#set cbrange [1e-4:]
+#set pm3d map
+
+# Extract the tics
+tics_x = system("cat results/A__SET_____FIGURE___cut_2dbinned | head -n 1 | sed 's/#//'")
+tics_y = system("cat results/A__SET_____FIGURE___cut_2dbinned | head -n 2 | tail -n 1 | sed 's/#//'")
+mtics_x = system("cat results/A__SET_____FIGURE___cut_2dbinned | head -n 3 | tail -n 1 | sed 's/#//'")
+mtics_y = system("cat results/A__SET_____FIGURE___cut_2dbinned | head -n 4 | tail -n 1 | sed 's/#//'")
+eval(sprintf("set xtics %s", tics_x))
+eval(sprintf("set ytics %s", tics_y))
+eval(sprintf("set xtics add %s", mtics_x))
+eval(sprintf("set ytics add %s", mtics_y))
+
+# Filthy hax
+miny = system("cat results/A__SET_____FIGURE___cut_2dbinned | head -n 5 | tail -n 1 | sed 's/#//'")
+maxy = system("cat results/A__SET_____FIGURE___cut_2dbinned | head -n 6 | tail -n 1 | sed 's/#//'")
+minx = system("cat results/A__SET_____FIGURE___cut_2dbinned | head -n 7 | tail -n 1 | sed 's/#//'")
+maxx = system("cat results/A__SET_____FIGURE___cut_2dbinned | head -n 8 | tail -n 1 | sed 's/#//'")
+
+set multiplot
+#set yrange [] writeback
+set xrange [] writeback
+set yrange [] writeback
+plot "results/A__SET_____FIGURE___cut_2dbinned" matrix with image not
+set xrange restore
+set yrange restore
+
+# And these axes values are ng, because this is row and column numbers.
+# Could gnuplot be any more useless?
+# The histogram range is 0 to __BINS__-1 in both ways.
+scalex(x)=(x-minx)*(__BINS__ - 1)/(maxx-minx)
+scaley(y)=(y-miny)*(__BINS__ - 1)/(maxy-miny)
+
+#set xrange [:]
+@KILLELEMENTS
+#set parametric
+#set style fill transparent solid 0.2 
+# Filling is ugly
+#plot "results/LIGO_horizon" using (scalex($1)):(scaley($2)) smooth csplines w filledcurves below y2=10 not dt 2 lw 3 lc rgb "black"
+plot "results/LIGO_horizon" using (scalex($1)):(scaley($2)) smooth csplines not dt 2 lw 3 lc rgb "gray"
+
+unset bar
+plot "data/aligo_chirpz.dat" using (scalex($2)):(scaley($5)):(scalex($2-$4)):(scalex($2+$3)):(scaley($5-$6)):(scaley($5+$7)) w xyerror lw 2 lc rgb "black"

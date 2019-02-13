@@ -1,0 +1,43 @@
+load "useful_macros.gpt"
+load "__SET_____FIGURE__-palette.gpt"
+
+
+set terminal cairolatex size 6cm,6cm standalone
+set output "A__SET__-__FIGURE__.tex"
+
+set tmargin at screen 0.16; set bmargin at screen 0.9
+set lmargin at screen 0.15; set rmargin at screen 0.95
+
+set style fill transparent solid 0.7 border
+set format y '\scalebox{0.5}{%.1f}'
+set ylabel '\scalebox{0.5}{Relative LIGO observed abundance (O1 \& O2)}' offset 6,0
+set format x '\scalebox{0.5}{%.0f}'
+set xlabel '\scalebox{0.5}{Apparent source frame BH mass ($M_\odot$)}' offset 0,1
+set xtics __TOP__/8 offset 0,0.3
+set mxtics
+set grid
+set key width -17
+
+#key_title = "__SET__" eq "BHBH" ? '$5-8M_\odot$' : "__SET__" eq "BHNS" ? '$1-2M_\odot~\&~5-8M_\odot$' : "__SET__" eq "NSNS" ? '$1-2M_\odot$' : "Unknown" 
+key_title = "__SET__" eq "BHBH" ? 'BHBH, $Z_\odot$' : "__SET__" eq "BHNS" ? 'BHNS, $Z_\odot$' : "__SET__" eq "NSNS" ? 'NSNS, $Z_\odot$' : "__SET__" eq "BHBH_HiZ" ? 'BHBH, $0.1Z_\odot$' : \
+            "__SET__" eq "NSNS_HiZ" ? 'NSNS, $0.1Z_\odot$' : "Unknown" 
+
+set yrange [0:0.5]
+set multiplot
+#plot [0:__TOP__] "results/A__SET___control_cut_1dbinned" w boxes t '\scalebox{0.5}{__SET__ (Control)}' ls 3, \
+#                 "results/A__SET_____FIGURE___cut_1dbinned" w boxes t '\scalebox{0.5}{__SET__ (GEODE)}' ls 8
+
+plot [0:__TOP__] "results/A__SET___control_cut_1dbinned" w boxes t sprintf('\scalebox{0.5}{%s ($N_\mathrm{GEODE} = 0$)}', key_title) ls 3, \
+                 "results/A__SET_____FIGURE___cut_1dbinned" w boxes t sprintf('\scalebox{0.5}{%s ($N_\mathrm{GEODE} = %d$)}', key_title, "__FIGURE__" eq "geodens" ? 1 : 2) ls 8
+
+
+# Bail on the dots if we don't have LIGO data for them :D
+if ("__FIGURE__" eq "geodens") quit;
+
+unset bars
+
+# Extract the count to unnormalize
+counts=system("cat data/LIGO_binned10 | head -n 1 | sed 's/#//'")
+eval(counts)
+@KILLELEMENTS
+plot [0:__TOP__] "data/LIGO_binned5" using ($1 > 60 ? NaN : $1):($2 > 0 ? $2 : NaN):(sqrt(N*$2)/N) w yerr lw 2 lc rgb "black" not
