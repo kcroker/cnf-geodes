@@ -1,0 +1,3 @@
+set macros
+
+KILLELEMENTS = "unset border; unset key; unset xtics; unset ytics; unset xlabel; unset x2label; unset ylabel; unset label; unset object; unset title"

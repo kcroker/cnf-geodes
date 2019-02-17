@@ -6,7 +6,7 @@ geode_k = 3
 
 # File variables
 data = data/0.05.dat data/0.2.dat data/1.dat data/2.dat
-figures = figure-geode_loglog-crop.pdf 
+figures = figure-geode_loglog-crop.pdf ligo_population_figs
 
 # Top level target is default
 # If there is a bibliography and a document file, make the final
@@ -21,6 +21,12 @@ figure-geode_loglog-crop.pdf : $(data)
 	gnuplot < figure-geode_loglog.gpt
 	pdflatex  -interaction nonstopmode -output-directory=tex_scratch figure-geode_loglog.tex
 	pdfcrop tex_scratch/figure-geode_loglog.pdf ./figure-geode_loglog-crop.pdf
+
+# (Note that these will fail if you've not already prepared the data sets referenced in
+# build_core_figures.sh)
+ligo_population_figs: heatmap.gpt prototype.gpt build_core_figures.sh
+	reprocess = $(file <ligo_figures_built)  
+	$(if $(reprocess), echo "Skipping ligo figures", ./build_core_figures.sh && echo "built" > ligo_figures_built)
 
 # ~~ DATA ~~
 # Haha that actually worked
@@ -38,7 +44,7 @@ tex_scratch/level3.aux : level3.tex $(figures)
 tex_scratch/level3.bbl : tex_scratch/level3.aux
 	BIBINPUTS="$(shell pwd)/tex_scratch/" TEXMFOUTPUT="tex_scratch/" bibtex tex_scratch/level3.aux
 
-.PHONY : clean distclean init
+.PHONY : clean distclean init ligo_population_figs
 
 # Initialize the working space
 init :
