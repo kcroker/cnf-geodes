@@ -10,9 +10,9 @@ I have also attempted to carve out all vestigial code, but may have missed thing
 In particular, `units.py` contains lots of stuff that is duplicated elsewhere (but everything should be consistent).
 
 The tools split into three categories:
-1.) Computation: e.g. a model GEODE theoretical mass function, a detector sensitivity cut
-2.) Solving the Keplerian orbital dynamics of binary systems, possibly with GEODEs
-3.) Auxiliary scripts which process outputs from 1.) and 2.) into the visualizations present in Paper III
+1. Computation: e.g. a model GEODE theoretical mass function, a detector sensitivity cut
+2. Solving the Keplerian orbital dynamics of binary systems, possibly with GEODEs
+3. Auxiliary scripts which process outputs from 1.) and 2.) into the visualizations present in Paper III
 
 Most tools are written in the UNIX style: the accept line based input on STDIN and produce line based output on STDOUT, complaining to STDERR.
 
