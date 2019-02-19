@@ -12,10 +12,10 @@
 #
 
 # These sets are stable
-for i in "NSNS_HiZ" "NSNS" "BHBH" "BHBH_HiZ"; do
+for i in "NSNS"; do
     # Iterate over analyses
     #    for j in "control_timeuniform" "geodegeode" "geodens"; do
-    for j in "geodegeode"; do
+    for j in "geodegeode" "control"; do
     #for j in "control_timeuniform" "geodegeode_timeuniform" "geodens"; do
     
 	# If the data set does not exist, do not try to make graphs for it
