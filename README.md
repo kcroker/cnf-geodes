@@ -44,14 +44,14 @@ First, note that the main scripts, `./geode-belczynski.py` and `./odb_analysis_r
 To regenerate the predicted mass function and its visualization, you can 
 ```bash
 $ make init
-$ make
+$ make -j
 ```
 To generate the GEODE population histograms and heatmaps, you must first make evolved population data products.  For example, to run the NS-NS initial conditions as N=2 GEODE binaries, with sampling in redshift based on the Madau & Dickinson (2014) SFR, you would type:
 ```bash
 $ cat demink_belczynski_N/ANSNS.02.dat | ./geode-belczynski.py results/ANSNS_geodegeode geode-geode madau > /dev/null & 
 $ tail -f current_status
 ```
-Note that `geode-belczynski.py` is an exception in its usage of STDOUT, because the `lsoda` integrator of Scipy drives ancient FORTRAN, which vomits on STDOUT.  Progress will be written to a file current_status, which is set internally.  (Yes, I know this is awkward for parallel runs, but really this output is debug and I didn't care about it once things were solid.)
+Note that `geode-belczynski.py` is an exception in its usage of STDOUT, because the `lsoda` integrator of Scipy drives ancient FORTRAN, which vomits on STDOUT.  Progress will be written to a file `current_status`, which is set internally.  (Yes, I know this is awkward for parallel runs, but really this output is debug and I didn't care about it once things were solid.)
 
 You can then build figures with
 ```bash
